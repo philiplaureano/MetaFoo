@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scratch", "Scratch\Scratch.csproj", "{87FF66FA-CE8E-40FE-B105-4C4B9BCF414B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo", "MetaFoo\MetaFoo.csproj", "{5CB48893-56F9-4456-8F7D-4C874822FE91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{87FF66FA-CE8E-40FE-B105-4C4B9BCF414B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87FF66FA-CE8E-40FE-B105-4C4B9BCF414B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87FF66FA-CE8E-40FE-B105-4C4B9BCF414B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CB48893-56F9-4456-8F7D-4C874822FE91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CB48893-56F9-4456-8F7D-4C874822FE91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CB48893-56F9-4456-8F7D-4C874822FE91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CB48893-56F9-4456-8F7D-4C874822FE91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
