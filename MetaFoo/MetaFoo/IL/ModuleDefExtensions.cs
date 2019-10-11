@@ -34,6 +34,9 @@ namespace MetaFoo.IL
                 if (setA?.Count != setB?.Count)
                     return false;
 
+                if (setA == null)
+                    return false;
+
                 return !setA.Where((t, i) => t != setB[i]).Any();
             }
 
