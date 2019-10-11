@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LinFu.Finders" Version="1.0.2" />
+      <PackageReference Include="LinFu.Loaders" Version="3.1.0" />
+      <PackageReference Include="Optional" Version="4.0.0" />
+    </ItemGroup>
+
+</Project>

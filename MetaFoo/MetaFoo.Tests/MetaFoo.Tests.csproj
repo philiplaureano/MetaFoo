@@ -4,6 +4,8 @@
         <TargetFramework>netcoreapp2.2</TargetFramework>
 
         <IsPackable>false</IsPackable>
+
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,7 +16,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MetaFoo\MetaFoo.csproj" />
+      <ProjectReference Include="..\MetaFoo.IL\MetaFoo.IL.csproj" />
+      <ProjectReference Include="..\MetaFoo.Reflection\MetaFoo.Reflection.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,6 +58,12 @@
 
     <ItemGroup>
       <DeployManifest Remove="obj\Debug\netcoreapp2.2\MetaFoo.Tests.application" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Collections, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\System.Collections.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
