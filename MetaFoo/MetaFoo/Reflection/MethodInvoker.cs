@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using LinFu.Loaders;
+using Optional;
 
 namespace MetaFoo.Reflection
 {
@@ -47,16 +48,16 @@ namespace MetaFoo.Reflection
             _extensionMethodPool.AddRange(matchingMethods);
         }
 
-        public object Invoke(string methodName, params object[] arguments)
+        public Option<object> Invoke(string methodName, params object[] arguments)
         {
-            MethodInfo bestMatch;
+            Option<MethodInfo> bestMatch;
 
             // Search the instance methods
             var finder = new MethodFinder<MethodInfo>();
             bestMatch = finder.GetBestMatch(_instanceMethodPool, new MethodFinderContext(methodName, arguments));
 
-            if (bestMatch != null)
-                return bestMatch.Invoke(_target, arguments);
+            if (bestMatch.HasValue)
+                return bestMatch.Invoke(Option.Some(_target), arguments);
 
             // Fall back to the extension methods if it isn't found
             var adjustedArguments = new List<object> {_target};
@@ -64,8 +65,8 @@ namespace MetaFoo.Reflection
 
             var context = new MethodFinderContext(methodName, adjustedArguments);
             bestMatch = finder.GetBestMatch(_extensionMethodPool, context);
-
-            return bestMatch?.Invoke(null, adjustedArguments.ToArray());
+            
+            return bestMatch.Invoke(Option.None<object>(), adjustedArguments.ToArray());
         }
     }
 }

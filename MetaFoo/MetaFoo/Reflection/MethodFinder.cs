@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using LinFu.Finders;
 using LinFu.Finders.Interfaces;
+using Optional;
 
 namespace MetaFoo.Reflection
 {
@@ -16,7 +17,7 @@ namespace MetaFoo.Reflection
             _finderTolerance = finderTolerance;
         }
 
-        public TMethod GetBestMatch(IEnumerable<TMethod> methods, IMethodFinderContext finderContext)
+        public Option<TMethod> GetBestMatch(IEnumerable<TMethod> methods, IMethodFinderContext finderContext)
         {
             var methodName = finderContext.MethodName;
 
@@ -71,7 +72,7 @@ namespace MetaFoo.Reflection
                 }
 
                 if (hasCompatibleParameters)
-                    return nextBestMatch.Item;
+                    return Option.Some(nextBestMatch.Item);
             }
 
             // Otherwise, fall back to a weighted search against the other remaining methods
@@ -85,8 +86,7 @@ namespace MetaFoo.Reflection
                 fuzzyList.AddCriteria(method => method.GetParameters().Length == 0);
 
             var bestMatch = fuzzyList.BestMatch(_finderTolerance);
-
-            return bestMatch?.Item;
+            return bestMatch == null ? Option.None<TMethod>() : Option.Some(bestMatch?.Item);
         }
     }
 }

@@ -48,6 +48,7 @@
       <PackageReference Include="dnlib" Version="3.2.0" />
       <PackageReference Include="LinFu.Finders" Version="1.0.2" />
       <PackageReference Include="LinFu.Loaders" Version="3.1.0" />
+      <PackageReference Include="Optional" Version="4.0.0" />
     </ItemGroup>
 
 </Project>

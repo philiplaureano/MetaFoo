@@ -36,24 +36,48 @@ namespace MetaFoo.Tests
             var items = new List<int>() {1, 2, 3};
             var instance = new MockClass();
             var invoker = new MethodInvoker(instance);
-            
+
             invoker.AddExtensionMethodsFrom(typeof(MockClassExtensions));
             invoker.Invoke("Clear", items);
-            
+
             Assert.Empty(items);
         }
-        
-        [Fact]        
+
+        [Fact]
         public void ShouldBeAbleToAddExtensionMethodsFromAnAssemblyAndTreatThemAsAdditionalInstanceMethods()
         {
             var items = new List<int>() {1, 2, 3};
             var instance = new MockClass();
             var invoker = new MethodInvoker(instance);
-            
+
             invoker.AddExtensionMethodsFrom(typeof(MockClassExtensions).Assembly);
             invoker.Invoke("Clear", items);
-            
+
             Assert.Empty(items);
+        }
+
+        [Fact]
+        public void ShouldReturnNoneWhenCallingAStaticMethodThatReturnsVoid()
+        {
+            var writer = new StringWriter();
+            Console.SetOut(writer);
+
+            var returnValue = typeof(Console).InvokeStatic("WriteLine", "Hello, World!");
+
+            Assert.NotEmpty(writer.ToString());
+            Assert.False(returnValue.HasValue);
+        }
+
+        [Fact]
+        public void ShouldReturnNoneWhenCallingAnInstanceMethodThatReturnsVoid()
+        {
+            var items = new List<int>();
+            var instance = new MockClass();
+            var invoker = new MethodInvoker(instance);
+            var returnValue = invoker.Invoke(nameof(MockClass.AddItem), items);
+            
+            Assert.NotEmpty(items);
+            Assert.False(returnValue.HasValue);
         }
     }
 }

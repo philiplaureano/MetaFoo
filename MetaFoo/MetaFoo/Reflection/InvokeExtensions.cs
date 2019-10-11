@@ -1,13 +1,28 @@
 using System;
 using System.Reflection;
+using Optional;
+using Optional.Unsafe;
 
 namespace MetaFoo.Reflection
 {
     public static class InvokeExtensions
     {
-        public static object InvokeStatic(this Type targetType, string methodName, params object[] args)
+        public static Option<object> Invoke(this Option<MethodInfo> optionalMethod, Option<object> optionalTargetInstance,
+            object[] args)
         {
-            if (targetType == null) 
+            if (!optionalMethod.HasValue)
+                return Option.None<object>();
+
+            var targetInstance = optionalTargetInstance.ValueOrDefault();
+            var targetMethod = optionalMethod.ValueOrFailure();
+            var result = targetMethod.Invoke(targetInstance, args);
+
+            return targetMethod.ReturnType == typeof(void) ? Option.None<object>() : Option.Some(result);
+        }
+
+        public static Option<object> InvokeStatic(this Type targetType, string methodName, params object[] args)
+        {
+            if (targetType == null)
                 throw new ArgumentNullException(nameof(targetType));
 
             var methods = targetType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
@@ -15,12 +30,10 @@ namespace MetaFoo.Reflection
             var finder = new MethodFinder<MethodInfo>();
 
             var matchingMethod = finder.GetBestMatch(methods, context);
-            if(matchingMethod==null)
-                throw new MethodNotFoundException(methodName,args);
+            if (matchingMethod == null)
+                throw new MethodNotFoundException(methodName, args);
 
-            var result = matchingMethod.Invoke(null, args);
-            
-            return result;
+            return matchingMethod.Invoke(Option.None<object>(), args);
         }
     }
 }
