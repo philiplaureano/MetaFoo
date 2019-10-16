@@ -8,7 +8,7 @@ using Optional;
 
 namespace MetaFoo.Reflection
 {
-    public class MethodInvoker
+    public class MethodInvoker : IMethodInvoker
     {
         private readonly List<MethodInfo> _extensionMethodPool = new List<MethodInfo>();
         private readonly List<MethodInfo> _instanceMethodPool = new List<MethodInfo>();
