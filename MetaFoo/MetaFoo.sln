@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo.IL", "MetaFoo.IL\Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo.Reflection", "MetaFoo.Reflection\MetaFoo.Reflection.csproj", "{D7845BB2-2288-4FF4-9D20-DD192AFEC2DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo.Adapters", "MetaFoo.Adapters\MetaFoo.Adapters.csproj", "{DDC6473F-C634-4B5F-B971-B14B749BBD3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{D7845BB2-2288-4FF4-9D20-DD192AFEC2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7845BB2-2288-4FF4-9D20-DD192AFEC2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7845BB2-2288-4FF4-9D20-DD192AFEC2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

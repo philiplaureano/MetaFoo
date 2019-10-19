@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="dnlib" Version="3.2.0" />
+      <PackageReference Include="LightInject.Interception" Version="2.0.3" />
+      <PackageReference Include="Optional" Version="4.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MetaFoo.Reflection\MetaFoo.Reflection.csproj" />
+    </ItemGroup>
+
+</Project>
