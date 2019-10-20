@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MetaFoo.Adapters\MetaFoo.Adapters.csproj" />
+      <ProjectReference Include="..\MetaFoo.Reflection\MetaFoo.Reflection.csproj" />
+    </ItemGroup>
+
+</Project>

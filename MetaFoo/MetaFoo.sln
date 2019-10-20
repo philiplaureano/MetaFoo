@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo.Reflection", "MetaF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo.Adapters", "MetaFoo.Adapters\MetaFoo.Adapters.csproj", "{DDC6473F-C634-4B5F-B971-B14B749BBD3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaFoo.Dynamic", "MetaFoo.Dynamic\MetaFoo.Dynamic.csproj", "{9C6B2960-FB99-4D7B-8FF1-9CB4DBCE7797}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDC6473F-C634-4B5F-B971-B14B749BBD3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C6B2960-FB99-4D7B-8FF1-9CB4DBCE7797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6B2960-FB99-4D7B-8FF1-9CB4DBCE7797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C6B2960-FB99-4D7B-8FF1-9CB4DBCE7797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C6B2960-FB99-4D7B-8FF1-9CB4DBCE7797}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

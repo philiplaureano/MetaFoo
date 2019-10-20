@@ -34,5 +34,19 @@ namespace MetaFoo.Adapters
             var adapter = new MethodInvokeAdapter(target);
             return adapter.CreateDuck<T>();
         }
+
+        public static object CreateDuck(this IInterceptor interceptor, Type proxyType)
+        {
+            var definition = new ProxyDefinition(proxyType, () => null);
+
+            definition.Implement(() => interceptor);
+            return definition.CreateProxy();
+        }
+        
+        public static object CreateDuck(this IMethodInvoker target, Type proxyType)
+        {
+            var adapter = new MethodInvokeAdapter(target);
+            return adapter.CreateDuck(proxyType);
+        }
     }
 }

@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MetaFoo.Adapters\MetaFoo.Adapters.csproj" />
+      <ProjectReference Include="..\MetaFoo.Dynamic\MetaFoo.Dynamic.csproj" />
       <ProjectReference Include="..\MetaFoo.IL\MetaFoo.IL.csproj" />
       <ProjectReference Include="..\MetaFoo.Reflection\MetaFoo.Reflection.csproj" />
     </ItemGroup>
