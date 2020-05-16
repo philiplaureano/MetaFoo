@@ -25,7 +25,7 @@ namespace MetaFoo.Adapters
             var candidateMethods = typeof(TInterface).GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(m => m.Name == _targetMethodName).ToArray();
 
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
 
             var bestMatch = finder.GetBestMatch(candidateMethods,
                 new MethodFinderContext(_targetMethodName, invocationInfo.Arguments));

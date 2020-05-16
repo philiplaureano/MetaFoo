@@ -53,7 +53,7 @@ namespace MetaFoo.Reflection
             Option<MethodInfo> bestMatch;
 
             // Search the instance methods
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
             bestMatch = finder.GetBestMatch(_instanceMethodPool, new MethodFinderContext(methodName, arguments));
 
             if (bestMatch.HasValue)

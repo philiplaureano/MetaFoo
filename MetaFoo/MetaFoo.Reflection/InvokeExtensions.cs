@@ -27,7 +27,7 @@ namespace MetaFoo.Reflection
 
             var methods = targetType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var context = new MethodFinderContext(methodName, args);
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
 
             var matchingMethod = finder.GetBestMatch(methods, context);
             if (matchingMethod == null)

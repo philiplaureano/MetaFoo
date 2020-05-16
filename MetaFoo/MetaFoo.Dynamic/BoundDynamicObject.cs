@@ -19,7 +19,7 @@ namespace MetaFoo.Dynamic
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
             var context = new MethodFinderContext(string.Empty, args);
 
             var delegatesByMethod = _delegates.ToDictionary(d => d.Method);

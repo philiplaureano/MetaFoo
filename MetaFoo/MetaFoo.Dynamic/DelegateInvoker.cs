@@ -25,7 +25,7 @@ namespace MetaFoo.Dynamic
 
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);
             
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
             
             // Note: The method name comparisons between delegates and the target method name have been skipped
             // because they will never match

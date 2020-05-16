@@ -25,7 +25,7 @@ namespace MetaFoo.Dynamic
         {
             return _methods.Keys;
         }
-
+        
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var targetType = binder.ReturnType;
@@ -56,7 +56,7 @@ namespace MetaFoo.Dynamic
 
                 // Use the first compatible getter
                 var getterMethod = delegatesByMethod.Keys.Where(m =>
-                    binder.ReturnType.IsAssignableFrom(m.ReturnType) 
+                    binder.ReturnType.IsAssignableFrom(m.ReturnType)
                     && !m.GetParameters().Any()).FirstOrNone();
 
                 if (getterMethod.HasValue)
@@ -65,7 +65,7 @@ namespace MetaFoo.Dynamic
                     var targetDelegate = delegatesByMethod[targetMethod];
 
                     result = targetMethod.Invoke(targetDelegate.Target, new object[0]);
-                    return true;    
+                    return true;
                 }
             }
 
@@ -79,12 +79,34 @@ namespace MetaFoo.Dynamic
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            throw new NotImplementedException();
+            result = null;
+
+            if (!args.Any())
+                return false;
+
+            if (args[0] is string methodName)
+            {
+                var remainingArgs = new List<object>();
+                for (var i = 1; i < args.Length; i++)
+                {
+                    remainingArgs.Add(args[i]);
+                }
+
+                return DoInvoke(remainingArgs.ToArray(), out result, methodName);
+            }
+
+
+            return false;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             var methodName = binder.Name;
+            return DoInvoke(args, out result, methodName);
+        }
+
+        private bool DoInvoke(object[] args, out object result, string methodName)
+        {
             var candidateDelegates = _methods.ContainsKey(methodName)
                 ? _methods[methodName].ToArray()
                 : Enumerable.Empty<MulticastDelegate>();
@@ -92,13 +114,17 @@ namespace MetaFoo.Dynamic
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);
             var candidateMethods = candidateDelegates.Select(d => d.Method).ToArray();
 
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
 
             result = null;
             var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
             if (!bestMatch.HasValue)
             {
-                return false;
+                // Find the closest match 
+                bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(string.Empty, args));
+
+                if (!bestMatch.HasValue)
+                    return false;
             }
 
             var bestMatchingMethod = bestMatch.ValueOrFailure();
@@ -110,7 +136,6 @@ namespace MetaFoo.Dynamic
             var returnValue = bestMatchingMethod.Invoke(targetDelegate.Target, args);
 
             result = returnValue;
-
             return true;
         }
 
@@ -148,7 +173,7 @@ namespace MetaFoo.Dynamic
             if (!setterDelegates.HasValue)
                 return false;
 
-            var finder = new MethodFinder<MethodInfo>();
+            var finder = new MethodBaseFinder<MethodInfo>();
             var delegatesByMethod = setterDelegates.ValueOrFailure().ToDictionary(d => d.Method);
             var bestMatch = finder.GetBestMatch(delegatesByMethod.Keys,
                 string.Empty, new[] {value});

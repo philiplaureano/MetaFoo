@@ -1,21 +1,22 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using LinFu.Finders;
 using LinFu.Finders.Interfaces;
 using Optional;
+using Optional.Unsafe;
 
 namespace MetaFoo.Reflection
 {
-    public class MethodFinder<TMethod> : IMethodFinder<TMethod>
-        where TMethod : MethodBase
+    public class MethodFinder<TType, TMethod> : IMethodFinder<TMethod>
+        where TMethod : class
     {
         private readonly double _finderTolerance;
+        private readonly IMethodFinderStrategy<TType, TMethod> _methodFinderStrategy;
 
-        public MethodFinder(double finderTolerance = .51)
+        public MethodFinder(IMethodFinderStrategy<TType, TMethod> methodFinderStrategy, double finderTolerance = .51)
         {
             _finderTolerance = finderTolerance;
+            _methodFinderStrategy = methodFinderStrategy;
         }
 
         public Option<TMethod> GetBestMatch(IEnumerable<TMethod> methods, IMethodFinderContext finderContext)
@@ -26,36 +27,46 @@ namespace MetaFoo.Reflection
 
             // Match the method name
             if (!string.IsNullOrEmpty(methodName))
-                candidateMethods = candidateMethods.Where(m => m.Name == methodName);
+                candidateMethods = candidateMethods.Where(m => _methodFinderStrategy.GetMethodName(m) == methodName);
 
             // Match the argument count
             var arguments = finderContext.Arguments.ToArray();
             var argumentCount = arguments.Length;
 
-            candidateMethods = candidateMethods.Where(m => m.GetParameters().Length == argumentCount);
+            candidateMethods =
+                candidateMethods.Where(m => _methodFinderStrategy.GetParameterTypes(m).Count() == argumentCount);
 
             // Find a compatible method signature
             bool HasCompatibleParameters(TMethod method, int position, IReadOnlyList<object> currentArguments)
             {
-                var parameters = method.GetParameters().ToArray();
+                var parameters = _methodFinderStrategy.GetParameterTypes(method).ToArray();
                 if (currentArguments.Count != parameters.Length)
                     return false;
 
-                var parameterType = parameters[position].ParameterType;
-                var hasCompatibleParameterType = parameterType.IsAssignableFrom(currentArguments[position]?.GetType());
+                var parameterType = parameters[position];
+                var argumentType = _methodFinderStrategy.GetType(currentArguments[position]);
+                if (!argumentType.HasValue)
+                    return false;
 
+                var hasCompatibleParameterType =
+                    _methodFinderStrategy.IsAssignableFrom(parameterType, argumentType.ValueOrFailure());
                 return hasCompatibleParameterType;
             }
 
             // Exact parameter type matches will outweigh compatible method overloads
             bool HasExactParameterTypes(TMethod method, int position, IReadOnlyList<object> currentArguments)
             {
-                var parameters = method.GetParameters().ToArray();
+                var parameters = _methodFinderStrategy.GetParameterTypes(method).ToArray();
                 if (currentArguments.Count != parameters.Length)
                     return false;
 
-                var parameterType = parameters[position].ParameterType;
-                return parameterType == currentArguments[position]?.GetType();
+                var parameterType = parameters[position];
+
+                var argumentType = _methodFinderStrategy.GetType(currentArguments[position]);
+                if (!argumentType.HasValue)
+                    return false;
+
+                return Equals(parameterType, argumentType.ValueOrFailure());
             }
 
             var fuzzyList = candidateMethods.AsFuzzyList();
@@ -84,7 +95,7 @@ namespace MetaFoo.Reflection
             }
 
             if (arguments.Length == 0)
-                fuzzyList.AddCriteria(method => method.GetParameters().Length == 0);
+                fuzzyList.AddCriteria(method => !_methodFinderStrategy.GetParameterTypes(method).Any());
 
             var bestMatch = fuzzyList.BestMatch(_finderTolerance);
             return bestMatch == null ? Option.None<TMethod>() : Option.Some(bestMatch?.Item);
