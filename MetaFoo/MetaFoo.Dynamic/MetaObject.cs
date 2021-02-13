@@ -14,12 +14,12 @@ using Optional.Unsafe;
 
 namespace MetaFoo.Dynamic
 {
-    public class DynamicObject : System.Dynamic.DynamicObject, IMethodInvoker
+    public class MetaObject : System.Dynamic.DynamicObject, IMethodInvoker
     {
-        private ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>> _methods =
+        private readonly ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>> _methods =
             new ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>>();
 
-        public DynamicObject()
+        public MetaObject()
         {
         }
 

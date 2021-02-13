@@ -17,7 +17,7 @@ namespace MetaFoo.Tests
             var writtenLines = new List<string>();
             Action<string> writeLine = text => { writtenLines.Add(text); };
 
-            dynamic foo = new Dynamic.DynamicObject();
+            dynamic foo = new Dynamic.MetaObject();
             foo.WriteLine = writeLine;
             foo.WriteLine("Hello, World!");
 
@@ -32,7 +32,7 @@ namespace MetaFoo.Tests
             Action<string> writeLine1 = text => { writtenLines.Add(text); };
             Action<string, string> writeLine2 = (arg1, arg2) => { writtenLines.Add($"{arg1} {arg2}"); };
 
-            dynamic foo = new Dynamic.DynamicObject();
+            dynamic foo = new Dynamic.MetaObject();
             foo.WriteLine = writeLine1;
             foo.WriteLine = writeLine2;
             foo.WriteLine("Hello, World!");
@@ -52,7 +52,7 @@ namespace MetaFoo.Tests
                 items.Add(42);
             };
 
-            dynamic foo = new Dynamic.DynamicObject();
+            dynamic foo = new Dynamic.MetaObject();
             foo.DoSomething = doSomething;
 
             ISampleDuckInterface sampleDuckInterface = foo;
@@ -66,7 +66,7 @@ namespace MetaFoo.Tests
         {
             Func<int> getValue = () => 42;
 
-            dynamic foo = new Dynamic.DynamicObject();
+            dynamic foo = new Dynamic.MetaObject();
             foo.get_Value = getValue;
 
             int result = foo.Value;
@@ -79,7 +79,7 @@ namespace MetaFoo.Tests
             var items = new List<string>();
             Action<string> setValue = arg0 => { items.Add(arg0); };
 
-            dynamic foo = new Dynamic.DynamicObject();
+            dynamic foo = new Dynamic.MetaObject();
             foo.set_Value = setValue;
 
             foo.Value = "42";
@@ -111,7 +111,7 @@ namespace MetaFoo.Tests
                 return result;
             };
 
-            var metaObject = new Dynamic.DynamicObject();
+            var metaObject = new Dynamic.MetaObject();
 
             dynamic foo = metaObject;
             foo.set_Value = setValue;
