@@ -56,32 +56,5 @@ namespace MetaFoo.Tests
 
             Assert.NotEmpty(items);
         }
-
-        [Fact]
-        public void ShouldRouteDelegateToInterceptorIfSignatureIsCompatible()
-        {
-            var fakeInterceptor = A.Fake<IInterceptor>();
-
-            var action = fakeInterceptor.CreateDelegate<Action>();
-            Assert.True(action.HasValue);
-
-            var targetAction = action.ValueOrFailure();
-            targetAction();
-            A.CallTo(() => fakeInterceptor.Invoke(A<IInvocationInfo>._)).MustHaveHappened();
-        }
-
-        [Fact]
-        public void ShouldRouteDelegateToMethodInvokerIfSignatureIsCompatible()
-        {
-            var invoker = A.Fake<IMethodInvoker>();
-
-            var action = invoker.CreateDelegate<Action>();
-            Assert.True(action.HasValue);
-
-            var targetAction = action.ValueOrFailure();
-            targetAction();
-            
-            A.CallTo(() => invoker.Invoke(A<string>._, A<object[]>._)).MustHaveHappened();
-        }
     }
 }
