@@ -5,14 +5,16 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
+using dnlib.DotNet;
 using MetaFoo.Adapters;
 using MetaFoo.Reflection;
+using Optional;
 using Optional.Collections;
 using Optional.Unsafe;
 
 namespace MetaFoo.Dynamic
 {
-    public class DynamicObject : System.Dynamic.DynamicObject
+    public class DynamicObject : System.Dynamic.DynamicObject, IMethodInvoker
     {
         private ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>> _methods =
             new ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>>();
@@ -25,7 +27,7 @@ namespace MetaFoo.Dynamic
         {
             return _methods.Keys;
         }
-        
+
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var targetType = binder.ReturnType;
@@ -107,9 +109,9 @@ namespace MetaFoo.Dynamic
 
         private bool DoInvoke(object[] args, out object result, string methodName)
         {
-            var candidateDelegates = _methods.ContainsKey(methodName)
+            var candidateDelegates = (_methods.ContainsKey(methodName)
                 ? _methods[methodName].ToArray()
-                : Enumerable.Empty<MulticastDelegate>();
+                : Enumerable.Empty<MulticastDelegate>()).ToArray();
 
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);
             var candidateMethods = candidateDelegates.Select(d => d.Method).ToArray();
@@ -186,6 +188,11 @@ namespace MetaFoo.Dynamic
             // Call the setter
             targetMethod.Invoke(targetDelegate.Target, new[] {value});
             return true;
+        }
+
+        public Option<object> Invoke(string methodName, params object[] arguments)
+        {
+            return DoInvoke(arguments, out var result, methodName) ? Option.Some(result) : Option.None<object>();
         }
     }
 }
