@@ -11,7 +11,7 @@ namespace MetaFoo.Tests
 {
     public class DynamicObjectTests
     {
-        [Fact(DisplayName = "The DynamicObject should be able to create new methods using Action<T> delegates")]
+        [Fact(DisplayName = "We should be able to create new methods using Action<T> delegates")]
         public void ShouldBeAbleToAddNewMethodsFromDelegates()
         {
             var writtenLines = new List<string>();
@@ -25,7 +25,7 @@ namespace MetaFoo.Tests
         }
 
         [Fact(DisplayName =
-            "The DynamicOjbect should be able to add and distinguish between two new method overloads with the same method name")]
+            "We should be able to add and distinguish between two new method overloads with the same method name")]
         public void ShouldBeAbleToAddNewMethodOverloadsFromDelegates()
         {
             var writtenLines = new List<string>();

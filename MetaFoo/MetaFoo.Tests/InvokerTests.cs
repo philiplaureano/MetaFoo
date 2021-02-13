@@ -9,7 +9,7 @@ namespace MetaFoo.Tests
 {
     public class InvokerTests
     {
-        [Fact]
+        [Fact(DisplayName = "We should be able to invoke an instance method based the given arguments and the method name")]
         public void ShouldBeAbleToInvokeAnInstanceMethodBasedOnArguments()
         {
             var items = new List<int>();
@@ -19,7 +19,7 @@ namespace MetaFoo.Tests
             Assert.NotEmpty(items);
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should be able to invoke a static method based on the given arguments and the method name")]
         public void ShouldBeAbleToInvokeAStaticMethodBasedOnArguments()
         {
             var writer = new StringWriter();
@@ -30,7 +30,7 @@ namespace MetaFoo.Tests
             Assert.NotEmpty(writer.ToString());
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should be able to add extension methods (from a single extension type) as normal methods to an existing invoker and treat those extension methods like they were always a part of the original class")]
         public void ShouldBeAbleToAddExtensionMethodsFromASingleTypeAndTreatThemAsAdditionalInstanceMethods()
         {
             var items = new List<int>() {1, 2, 3};
@@ -43,7 +43,7 @@ namespace MetaFoo.Tests
             Assert.Empty(items);
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should be able to add extension methods (from an entire assembly) as normal methods to an existing invoker and treat those extension methods like they were always a part of the original class")]
         public void ShouldBeAbleToAddExtensionMethodsFromAnAssemblyAndTreatThemAsAdditionalInstanceMethods()
         {
             var items = new List<int>() {1, 2, 3};
@@ -56,7 +56,7 @@ namespace MetaFoo.Tests
             Assert.Empty(items);
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should return Option.None<object> to indicate that a static method call returned nothing as a result of its execution")]
         public void ShouldReturnNoneWhenCallingAStaticMethodThatReturnsVoid()
         {
             var writer = new StringWriter();
@@ -68,7 +68,7 @@ namespace MetaFoo.Tests
             Assert.False(returnValue.HasValue);
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should return Option.None<object> to indicate that an instance method call returned nothing as a result of its execution")]
         public void ShouldReturnNoneWhenCallingAnInstanceMethodThatReturnsVoid()
         {
             var items = new List<int>();

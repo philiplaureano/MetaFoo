@@ -13,7 +13,7 @@ namespace MetaFoo.Tests
 {
     public class DuckTypingTests
     {
-        [Fact]
+        [Fact(DisplayName = "We should be able to duck type an interface type to a class with the same method signatures")]
         public void ShouldRouteInterfaceMethodCallsToAnObjectWithACompatibleMethodSignature()
         {
             var foo = new SampleDuckType();
@@ -24,7 +24,7 @@ namespace MetaFoo.Tests
             Assert.True(foo.WasCalled);
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should be able to route an interface method call to any class that implements the IIInterceptor interface")]
         public void ShouldRouteInterfaceCallToInterceptorInstance()
         {
             var fakeInterceptor = A.Fake<IInterceptor>();
@@ -34,7 +34,7 @@ namespace MetaFoo.Tests
             A.CallTo(() => fakeInterceptor.Invoke(A<IInvocationInfo>._)).MustHaveHappened();
         }
 
-        [Fact]
+        [Fact(DisplayName = "We should be able to route an interface method call to any class that implements the IMethodInvoker interface")]
         public void ShouldRouteInterfaceCallToMethodInvokerInstance()
         {
             var invoker = A.Fake<IMethodInvoker>();
@@ -44,7 +44,8 @@ namespace MetaFoo.Tests
             A.CallTo(() => invoker.Invoke(A<string>._, A<object[]>._)).MustHaveHappened();
         }
 
-        [Fact]
+        [Fact(DisplayName =
+            "We should be able to route calls to a single method on an interface back to a delegate if the delegate has a compatible signature with the given method")]
         public void ShouldRouteInterfaceCallToDelegateIfMethodSignatureIsCompatible()
         {
             var items = new List<object>();
