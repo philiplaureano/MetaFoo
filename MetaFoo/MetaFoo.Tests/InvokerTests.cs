@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MetaFoo.Reflection;
+using MetaFoo.Core.Reflection;
 using MetaFoo.Tests.Mocks;
 using Xunit;
 

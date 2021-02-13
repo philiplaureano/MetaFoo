@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <PackageId>Laureano.MetaFoo.Core</PackageId>
+        <Title>MetaFoo</Title>
+        <Authors>Philip Laureano</Authors>
+        <Description>A metaprogramming library for .NET</Description>
+        <Copyright>Copyright (C) Philip Laureano 2021</Copyright>
+        <PackageProjectUrl>https://github.com/philiplaureano/metafoo</PackageProjectUrl>
+        <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/philiplaureano/metafoo</RepositoryUrl>
+        <PackageTags>metaprogramming csharp</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="dnlib" Version="3.3.2" />
+      <PackageReference Include="LightInject.Interception" Version="2.0.3" />
+      <PackageReference Include="LinFu.Finders" Version="1.0.2" />
+      <PackageReference Include="LinFu.Loaders" Version="3.1.0" />
+      <PackageReference Include="Optional" Version="4.0.0" />
+    </ItemGroup>
+
+</Project>

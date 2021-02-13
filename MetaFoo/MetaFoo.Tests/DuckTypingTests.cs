@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using FakeItEasy;
 using LightInject.Interception;
-using MetaFoo.Adapters;
-using MetaFoo.Reflection;
+
+using MetaFoo.Core.Adapters;
+using MetaFoo.Core.Reflection;
 using MetaFoo.Tests.Mocks;
 using Optional;
 using Optional.Unsafe;
