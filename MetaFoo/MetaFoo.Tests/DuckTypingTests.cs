@@ -41,7 +41,7 @@ namespace MetaFoo.Tests
             var duck = invoker.CreateDuck<ISampleDuckInterface>();
             duck.DoSomething();
 
-            A.CallTo(() => invoker.Invoke(A<string>._, A<object[]>._)).MustHaveHappened();
+            A.CallTo(() => invoker.Invoke(A<Option<string>>._, A<object[]>._)).MustHaveHappened();
         }
 
         [Fact(DisplayName =

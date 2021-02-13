@@ -48,13 +48,13 @@ namespace MetaFoo.Reflection
             _extensionMethodPool.AddRange(matchingMethods);
         }
 
-        public Option<object> Invoke(string methodName, params object[] arguments)
+        public Option<object> Invoke(Option<string> methodName, params object[] arguments)
         {
             Option<MethodInfo> bestMatch;
 
             // Search the instance methods
             var finder = new MethodBaseFinder<MethodInfo>();
-            bestMatch = finder.GetBestMatch(_instanceMethodPool, new MethodFinderContext(Option.Some(methodName), arguments));
+            bestMatch = finder.GetBestMatch(_instanceMethodPool, new MethodFinderContext(methodName, arguments));
 
             if (bestMatch.HasValue)
                 return bestMatch.Invoke(Option.Some(_target), arguments);
@@ -63,7 +63,7 @@ namespace MetaFoo.Reflection
             var adjustedArguments = new List<object> {_target};
             adjustedArguments.AddRange(arguments);
 
-            var context = new MethodFinderContext(Option.Some(methodName), adjustedArguments);
+            var context = new MethodFinderContext(methodName, adjustedArguments);
             bestMatch = finder.GetBestMatch(_extensionMethodPool, context);
             
             return bestMatch.Invoke(Option.None<object>(), adjustedArguments.ToArray());

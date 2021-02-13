@@ -63,10 +63,7 @@ namespace MetaFoo.Reflection
                 var parameterType = parameters[position];
 
                 var argumentType = _methodFinderStrategy.GetType(currentArguments[position]);
-                if (!argumentType.HasValue)
-                    return false;
-
-                return Equals(parameterType, argumentType.ValueOrFailure());
+                return argumentType.HasValue && Equals(parameterType, argumentType.ValueOrFailure());
             }
 
             var fuzzyList = candidateMethods.AsFuzzyList();

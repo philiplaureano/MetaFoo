@@ -14,7 +14,7 @@ using Optional.Unsafe;
 
 namespace MetaFoo.Dynamic
 {
-    public class MetaObject : System.Dynamic.DynamicObject, IMethodInvoker
+    public class MetaObject : DynamicObject, IMethodInvoker
     {
         private readonly ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>> _methods =
             new ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>>();
@@ -94,7 +94,7 @@ namespace MetaFoo.Dynamic
                     remainingArgs.Add(args[i]);
                 }
 
-                return DoInvoke(remainingArgs.ToArray(), out result, methodName);
+                return DoInvoke(remainingArgs.ToArray(), out result, Option.Some(methodName));
             }
 
 
@@ -104,13 +104,13 @@ namespace MetaFoo.Dynamic
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             var methodName = binder.Name;
-            return DoInvoke(args, out result, methodName);
+            return DoInvoke(args, out result, Option.Some(methodName));
         }
 
-        private bool DoInvoke(object[] args, out object result, string methodName)
+        private bool DoInvoke(object[] args, out object result, Option<string> methodName)
         {
-            var candidateDelegates = (_methods.ContainsKey(methodName)
-                ? _methods[methodName].ToArray()
+            var candidateDelegates = (methodName.HasValue && _methods.ContainsKey(methodName.ValueOrFailure())
+                ? _methods[methodName.ValueOrFailure()].ToArray()
                 : Enumerable.Empty<MulticastDelegate>()).ToArray();
 
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);
@@ -119,7 +119,7 @@ namespace MetaFoo.Dynamic
             var finder = new MethodBaseFinder<MethodInfo>();
 
             result = null;
-            var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(Option.Some<string>(methodName), args));
+            var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
             if (!bestMatch.HasValue)
             {
                 // Find the closest match 
@@ -190,7 +190,7 @@ namespace MetaFoo.Dynamic
             return true;
         }
 
-        public Option<object> Invoke(string methodName, params object[] arguments)
+        public Option<object> Invoke(Option<string> methodName, params object[] arguments)
         {
             return DoInvoke(arguments, out var result, methodName) ? Option.Some(result) : Option.None<object>();
         }

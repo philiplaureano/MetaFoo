@@ -17,10 +17,10 @@ namespace MetaFoo.Dynamic
             _methods = methods;
         }
 
-        public Option<object> Invoke(string methodName, params object[] arguments)
+        public Option<object> Invoke(Option<string> methodName, params object[] arguments)
         {
-            var candidateDelegates = _methods.ContainsKey(methodName)
-                ? _methods[methodName].ToArray()
+            var candidateDelegates = methodName.HasValue && _methods.ContainsKey(methodName.ValueOrFailure())
+                ? _methods[methodName.ValueOrFailure()].ToArray()
                 : Enumerable.Empty<MulticastDelegate>();
 
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);

@@ -4,6 +4,6 @@ namespace MetaFoo.Reflection
 {
     public interface IMethodInvoker
     {
-        Option<object> Invoke(string methodName, params object[] arguments);
+        Option<object> Invoke(Option<string> methodName, params object[] arguments);
     }
 }
