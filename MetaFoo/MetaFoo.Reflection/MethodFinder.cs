@@ -26,8 +26,8 @@ namespace MetaFoo.Reflection
             var candidateMethods = (methods ?? new TMethod[0]);
 
             // Match the method name
-            if (!string.IsNullOrEmpty(methodName))
-                candidateMethods = candidateMethods.Where(m => _methodFinderStrategy.GetMethodName(m) == methodName);
+            if (methodName.HasValue && !string.IsNullOrEmpty(methodName.ValueOrDefault()))
+                candidateMethods = candidateMethods.Where(m => _methodFinderStrategy.GetMethodName(m) == methodName.ValueOrFailure());
 
             // Match the argument count
             var arguments = finderContext.Arguments.ToArray();

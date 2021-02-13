@@ -54,7 +54,7 @@ namespace MetaFoo.Reflection
 
             // Search the instance methods
             var finder = new MethodBaseFinder<MethodInfo>();
-            bestMatch = finder.GetBestMatch(_instanceMethodPool, new MethodFinderContext(methodName, arguments));
+            bestMatch = finder.GetBestMatch(_instanceMethodPool, new MethodFinderContext(Option.Some(methodName), arguments));
 
             if (bestMatch.HasValue)
                 return bestMatch.Invoke(Option.Some(_target), arguments);
@@ -63,7 +63,7 @@ namespace MetaFoo.Reflection
             var adjustedArguments = new List<object> {_target};
             adjustedArguments.AddRange(arguments);
 
-            var context = new MethodFinderContext(methodName, adjustedArguments);
+            var context = new MethodFinderContext(Option.Some(methodName), adjustedArguments);
             bestMatch = finder.GetBestMatch(_extensionMethodPool, context);
             
             return bestMatch.Invoke(Option.None<object>(), adjustedArguments.ToArray());

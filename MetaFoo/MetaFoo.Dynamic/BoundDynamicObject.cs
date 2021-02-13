@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using MetaFoo.Reflection;
+using Optional;
 using Optional.Unsafe;
 
 namespace MetaFoo.Dynamic
@@ -20,7 +21,7 @@ namespace MetaFoo.Dynamic
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
             var finder = new MethodBaseFinder<MethodInfo>();
-            var context = new MethodFinderContext(string.Empty, args);
+            var context = new MethodFinderContext(Option.None<string>(), args);
 
             var delegatesByMethod = _delegates.ToDictionary(d => d.Method);
             var methods = delegatesByMethod.Keys;

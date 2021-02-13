@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Optional;
 
 namespace MetaFoo.Reflection
 {
     public interface IMethodFinderContext
     {
-        string MethodName { get; }
+        Option<string> MethodName { get; }
 
         IEnumerable<object> Arguments { get; }
     }

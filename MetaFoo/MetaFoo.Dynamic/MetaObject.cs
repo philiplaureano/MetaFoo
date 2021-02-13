@@ -119,11 +119,11 @@ namespace MetaFoo.Dynamic
             var finder = new MethodBaseFinder<MethodInfo>();
 
             result = null;
-            var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
+            var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(Option.Some<string>(methodName), args));
             if (!bestMatch.HasValue)
             {
                 // Find the closest match 
-                bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(string.Empty, args));
+                bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(Option.None<string>(), args));
 
                 if (!bestMatch.HasValue)
                     return false;

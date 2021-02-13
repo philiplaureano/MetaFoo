@@ -9,7 +9,7 @@ namespace MetaFoo.Reflection
         public static Option<TMethod> GetBestMatch<TMethod>(this IMethodFinder<TMethod> finder,
             IEnumerable<TMethod> methods, string methodName, IEnumerable<object> args) where TMethod : MethodBase
         {
-            return finder.GetBestMatch(methods, new MethodFinderContext(methodName, args));
+            return finder.GetBestMatch(methods, new MethodFinderContext(Option.Some(methodName), args));
         }
     }
 }

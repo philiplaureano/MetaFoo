@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using LightInject.Interception;
 using MetaFoo.Reflection;
+using Optional;
 
 namespace MetaFoo.Adapters
 {
@@ -22,23 +23,24 @@ namespace MetaFoo.Adapters
 
         public object Invoke(IInvocationInfo invocationInfo)
         {
+            var targetMethodName = _targetMethodName;
             var candidateMethods = typeof(TInterface).GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(m => m.Name == _targetMethodName).ToArray();
+                .Where(m => m.Name == targetMethodName).ToArray();
 
             var finder = new MethodBaseFinder<MethodInfo>();
 
             var bestMatch = finder.GetBestMatch(candidateMethods,
-                new MethodFinderContext(_targetMethodName, invocationInfo.Arguments));
+                new MethodFinderContext(Option.Some(targetMethodName), invocationInfo.Arguments));
 
             if (!bestMatch.HasValue)
-                throw new NotImplementedException($"Invocation error: Unable to find a method that is compatible with the '{_targetMethodName}' method");
+                throw new NotImplementedException($"Invocation error: Unable to find a method that is compatible with the '{targetMethodName}' method");
 
             // Match the signatures
             var matchingSignature = finder.GetBestMatch(new[] {_targetDelegateMethodSignature},
-                new MethodFinderContext(string.Empty, invocationInfo.Arguments));
+                new MethodFinderContext(Option.None<string>(), invocationInfo.Arguments));
 
             if(!matchingSignature.HasValue)
-                throw new NotImplementedException($"Invocation error: Unable to find a method that is compatible with the '{_targetMethodName}' method");
+                throw new NotImplementedException($"Invocation error: Unable to find a method that is compatible with the '{targetMethodName}' method");
 
             var result = _targetDelegateMethodSignature.Invoke(_targetDelegate.Target, invocationInfo.Arguments);
             
