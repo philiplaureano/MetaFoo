@@ -36,7 +36,7 @@ namespace MetaFoo.Core.Dynamic
             if (!targetType.IsInterface)
                 return false;
 
-            var invoker = new DelegateInvoker(_methods);
+            var invoker = new DelegateInvoker(this, _methods);
             var proxy = invoker.CreateDuck(targetType);
             result = proxy;
 
@@ -115,7 +115,7 @@ namespace MetaFoo.Core.Dynamic
 
             var finder = new MethodBaseFinder<MethodInfo>();
             var methodArgs = new List<object>(args);
-            
+
             result = null;
             var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
             if (!bestMatch.HasValue)
@@ -144,7 +144,7 @@ namespace MetaFoo.Core.Dynamic
                         methodArgs.Add(this);
                         methodArgs.AddRange(args);
                     }
-                    
+
                     if (!candidateMethods.Any(isFallbackMethod))
                         return false;
 
@@ -155,7 +155,7 @@ namespace MetaFoo.Core.Dynamic
                         return false;
                 }
             }
-            
+
             var bestMatchingMethod = bestMatch.ValueOrFailure();
             if (!delegatesByMethod.ContainsKey(bestMatchingMethod))
                 return false;

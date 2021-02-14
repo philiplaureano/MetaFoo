@@ -30,7 +30,7 @@ namespace MetaFoo.Core.Reflection
             var finder = new MethodBaseFinder<MethodInfo>();
 
             var matchingMethod = finder.GetBestMatch(methods, context);
-            if (matchingMethod == null)
+            if (!matchingMethod.HasValue)
                 throw new MethodNotFoundException(methodName, args);
 
             return matchingMethod.Invoke(Option.None<object>(), args);
