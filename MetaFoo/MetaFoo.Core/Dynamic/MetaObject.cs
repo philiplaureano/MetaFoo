@@ -114,8 +114,7 @@ namespace MetaFoo.Core.Dynamic
             var candidateMethods = candidateDelegates.Select(d => d.Method).ToArray();
 
             var finder = new MethodBaseFinder<MethodInfo>();
-
-            var methodArgs = new List<object>();
+            var methodArgs = new List<object>(args);
             
             result = null;
             var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
@@ -136,15 +135,18 @@ namespace MetaFoo.Core.Dynamic
 
                         return hasDynamicObjectParameter;
                     };
+
+                    if (candidateMethods.Any(isFallbackMethod))
+                    {
+                        // Insert the 'this' parameter into the list of args and see if we
+                        // can find a match
+                        methodArgs.Clear();
+                        methodArgs.Add(this);
+                        methodArgs.AddRange(args);
+                    }
                     
                     if (!candidateMethods.Any(isFallbackMethod))
                         return false;
-
-                    // Insert the 'this' parameter into the list of args and see if we
-                    // can find a match
-                    methodArgs.Clear();
-                    methodArgs.Add(this);
-                    methodArgs.AddRange(args);
 
                     bestMatch = finder.GetBestMatch(candidateMethods,
                         new MethodFinderContext(Option.None<string>(), methodArgs));
