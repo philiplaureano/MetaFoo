@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using MetaFoo.Core.Adapters;
@@ -122,7 +123,7 @@ namespace MetaFoo.Tests
             var expectedValue = 42;
             duckType.Value = expectedValue;
             Assert.Equal(expectedValue, duckType.Value);
-            
+
             Assert.True(wasGetterCalled.WaitOne());
             Assert.True(wasSetterCalled.WaitOne());
         }
@@ -131,17 +132,35 @@ namespace MetaFoo.Tests
         public void ShouldBeAbleToAddMethodWithoutUsingDynamicKeyword()
         {
             var wasMethodCalled = new ManualResetEvent(false);
-            
+
             // Use the Action delegate as the method body
             Action methodBody = () => wasMethodCalled.Set();
-            
+
             var metaObject = new MetaObject();
             metaObject.AddMethod("DoSomething", methodBody);
-            
+
             dynamic foo = metaObject;
             foo.DoSomething();
-            
+
             Assert.True(wasMethodCalled.WaitOne());
+        }
+
+        [Fact(DisplayName =
+            "We should be able to pass the instance of the MetaObject to any newly added methods to make it easier for them to manage their own state")]
+        public void ShouldBeAbleToPassTheDynamicObjectInstanceToAddedMethodsAsAnOptionalParameter()
+        {
+            var wasMethodCalled = new ManualResetEvent(false);
+
+            // Use the Action delegate as the method body
+            Action<DynamicObject> methodBody = _ => wasMethodCalled.Set();
+
+            var metaObject = new MetaObject();
+            metaObject.AddMethod("DoSomething", methodBody);
+
+            dynamic foo = metaObject;
+            foo.DoSomething();
+
+            Assert.True(wasMethodCalled.WaitOne(TimeSpan.FromMilliseconds(100)));
         }
     }
 }

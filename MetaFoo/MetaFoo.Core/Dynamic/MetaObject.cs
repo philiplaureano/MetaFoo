@@ -95,7 +95,6 @@ namespace MetaFoo.Core.Dynamic
                 return DoInvoke(remainingArgs.ToArray(), out result, Option.Some(methodName));
             }
 
-
             return false;
         }
 
@@ -116,6 +115,8 @@ namespace MetaFoo.Core.Dynamic
 
             var finder = new MethodBaseFinder<MethodInfo>();
 
+            var methodArgs = new List<object>();
+            
             result = null;
             var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
             if (!bestMatch.HasValue)
@@ -124,16 +125,41 @@ namespace MetaFoo.Core.Dynamic
                 bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(Option.None<string>(), args));
 
                 if (!bestMatch.HasValue)
-                    return false;
+                {
+                    // If the search fails, check if there are any methods that take a DynamicObject as a first optional parameter
+                    Func<MethodInfo, bool> isFallbackMethod = method =>
+                    {
+                        var parameters = method.GetParameters();
+                        var hasDynamicObjectParameter = parameters.Length > 0 &&
+                                                        parameters.First().ParameterType
+                                                            .IsAssignableFrom(typeof(DynamicObject));
+
+                        return hasDynamicObjectParameter;
+                    };
+                    
+                    if (!candidateMethods.Any(isFallbackMethod))
+                        return false;
+
+                    // Insert the 'this' parameter into the list of args and see if we
+                    // can find a match
+                    methodArgs.Clear();
+                    methodArgs.Add(this);
+                    methodArgs.AddRange(args);
+
+                    bestMatch = finder.GetBestMatch(candidateMethods,
+                        new MethodFinderContext(Option.None<string>(), methodArgs));
+
+                    if (!bestMatch.HasValue)
+                        return false;
+                }
             }
-
+            
             var bestMatchingMethod = bestMatch.ValueOrFailure();
-
             if (!delegatesByMethod.ContainsKey(bestMatchingMethod))
                 return false;
 
             var targetDelegate = delegatesByMethod[bestMatchingMethod];
-            var returnValue = bestMatchingMethod.Invoke(targetDelegate.Target, args);
+            var returnValue = bestMatchingMethod.Invoke(targetDelegate.Target, methodArgs.ToArray());
 
             result = returnValue;
             return true;
@@ -180,6 +206,7 @@ namespace MetaFoo.Core.Dynamic
 
             if (!bestMatch.HasValue)
                 return false;
+
             var targetMethod = bestMatch.ValueOrFailure();
             var targetDelegate = delegatesByMethod[targetMethod];
 
