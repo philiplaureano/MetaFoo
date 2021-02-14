@@ -9,6 +9,9 @@ namespace MetaFoo.Core.Adapters
         public static T CreateDuck<T>(this object target)
             where T : class
         {
+            if (target is IMethodInvoker invoker)
+                return invoker.CreateDuck<T>();
+            
             var definition = new ProxyDefinition(typeof(T), () => null);
             definition.Implement(() => new DuckTypeInterceptor(target));
             return definition.CreateProxy<T>();

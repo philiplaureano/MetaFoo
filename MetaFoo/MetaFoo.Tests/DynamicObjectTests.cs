@@ -8,6 +8,7 @@ using MetaFoo.Core.Adapters;
 using MetaFoo.Tests.Mocks;
 using Xunit;
 using MetaFoo.Core.Dynamic;
+using MetaFoo.Core.Reflection;
 
 namespace MetaFoo.Tests
 {
@@ -160,6 +161,24 @@ namespace MetaFoo.Tests
             dynamic foo = metaObject;
             foo.DoSomething();
 
+            Assert.True(wasMethodCalled.WaitOne(TimeSpan.FromMilliseconds(100)));
+        }
+
+        [Fact(DisplayName =
+            "We should be able to call CreateDuck<T> from the MetaObject and create duck typed interface instances")]
+        public void ShouldBeAbleToCreateDuckTypesFromTheMetaObjectItself()
+        {
+            var wasMethodCalled = new ManualResetEvent(false);
+            var metaObject = new MetaObject();
+            metaObject.AddMethod<Func<int>>("get_Value", () =>
+            {
+                wasMethodCalled.Set();
+                return 42;
+            });
+            
+            var duck = metaObject.CreateDuck<ISampleInterfaceWithProperties>();
+            Assert.Equal(42, duck.Value);
+            
             Assert.True(wasMethodCalled.WaitOne(TimeSpan.FromMilliseconds(100)));
         }
     }
