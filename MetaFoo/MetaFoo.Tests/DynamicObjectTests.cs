@@ -126,5 +126,22 @@ namespace MetaFoo.Tests
             Assert.True(wasGetterCalled.WaitOne());
             Assert.True(wasSetterCalled.WaitOne());
         }
+
+        [Fact(DisplayName = "We should be able to add new methods just by using the MetaObject.AddMethod() method")]
+        public void ShouldBeAbleToAddMethodWithoutUsingDynamicKeyword()
+        {
+            var wasMethodCalled = new ManualResetEvent(false);
+            
+            // Use the Action delegate as the method body
+            Action methodBody = () => wasMethodCalled.Set();
+            
+            var metaObject = new MetaObject();
+            metaObject.AddMethod("DoSomething", methodBody);
+            
+            dynamic foo = metaObject;
+            foo.DoSomething();
+            
+            Assert.True(wasMethodCalled.WaitOne());
+        }
     }
 }

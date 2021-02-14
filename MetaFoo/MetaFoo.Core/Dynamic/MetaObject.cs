@@ -192,5 +192,15 @@ namespace MetaFoo.Core.Dynamic
         {
             return DoInvoke(arguments, out var result, methodName) ? Option.Some(result) : Option.None<object>();
         }
+
+        public void AddMethod<TDelegate>(string methodName, TDelegate methodImplementation)
+            where TDelegate : MulticastDelegate
+        {
+            if (!_methods.ContainsKey(methodName))
+                _methods[methodName] = new ConcurrentBag<MulticastDelegate>();
+
+            var targetCollection = _methods[methodName];
+            targetCollection.Add(methodImplementation);
+        }
     }
 }
