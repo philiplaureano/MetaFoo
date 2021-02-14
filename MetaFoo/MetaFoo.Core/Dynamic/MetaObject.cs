@@ -15,7 +15,7 @@ namespace MetaFoo.Core.Dynamic
     public class MetaObject : DynamicObject, IMethodInvoker
     {
         private readonly ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>> _methods =
-            new ConcurrentDictionary<string, ConcurrentBag<MulticastDelegate>>();
+            new();
 
         public MetaObject()
         {
@@ -112,49 +112,12 @@ namespace MetaFoo.Core.Dynamic
 
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);
             var candidateMethods = candidateDelegates.Select(d => d.Method).ToArray();
-
-            var finder = new MethodBaseFinder<MethodInfo>();
+            
             var methodArgs = new List<object>(args);
-
             result = null;
-            var bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
-            if (!bestMatch.HasValue)
-            {
-                // Find the closest match 
-                bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(Option.None<string>(), args));
 
-                if (!bestMatch.HasValue)
-                {
-                    // If the search fails, check if there are any methods that take a DynamicObject as a first optional parameter
-                    Func<MethodInfo, bool> isFallbackMethod = method =>
-                    {
-                        var parameters = method.GetParameters();
-                        var hasDynamicObjectParameter = parameters.Length > 0 &&
-                                                        parameters.First().ParameterType
-                                                            .IsAssignableFrom(typeof(DynamicObject));
-
-                        return hasDynamicObjectParameter;
-                    };
-
-                    if (candidateMethods.Any(isFallbackMethod))
-                    {
-                        // Insert the 'this' parameter into the list of args and see if we
-                        // can find a match
-                        methodArgs.Clear();
-                        methodArgs.Add(this);
-                        methodArgs.AddRange(args);
-                    }
-
-                    if (!candidateMethods.Any(isFallbackMethod))
-                        return false;
-
-                    bestMatch = finder.GetBestMatch(candidateMethods,
-                        new MethodFinderContext(Option.None<string>(), methodArgs));
-
-                    if (!bestMatch.HasValue)
-                        return false;
-                }
-            }
+            if (!TryResolve(methodName, args, candidateMethods, methodArgs, out var bestMatch))
+                return false;
 
             var bestMatchingMethod = bestMatch.ValueOrFailure();
             if (!delegatesByMethod.ContainsKey(bestMatchingMethod))
@@ -167,6 +130,39 @@ namespace MetaFoo.Core.Dynamic
             return true;
         }
 
+        private bool TryResolve(Option<string> methodName, object[] args, MethodInfo[] candidateMethods,
+            List<object> methodArgs,
+            out Option<MethodInfo> bestMatch)
+        {
+            var finder = new MethodBaseFinder<MethodInfo>();
+            bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(methodName, args));
+            if (bestMatch.HasValue)
+                return true;
+
+            // Find the closest match if we can't match the method name
+            bestMatch = finder.GetBestMatch(candidateMethods, new MethodFinderContext(Option.None<string>(), args));
+            if (bestMatch.HasValue)
+                return true;
+
+            // If the search fails, check if there are any methods that take a MetaObject as a first optional parameter
+            if (candidateMethods.Any(m => m.IsFallbackMethod()))
+            {
+                // Insert the 'this' parameter into the list of args and see if we
+                // can find a match
+                methodArgs.Clear();
+                methodArgs.Add(this);
+                methodArgs.AddRange(args);
+            }
+
+            if (!candidateMethods.Any(m => m.IsFallbackMethod()))
+                return false;
+
+            bestMatch = finder.GetBestMatch(candidateMethods,
+                new MethodFinderContext(Option.None<string>(), methodArgs));
+
+            return bestMatch.HasValue;
+        }
+
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             var memberName = binder.Name;
@@ -176,18 +172,15 @@ namespace MetaFoo.Core.Dynamic
 
             // If there is no existing member and the value is 
             // a delegate, it means that the caller wants to add a new property
-            if (!string.IsNullOrWhiteSpace(memberName) &&
-                value is MulticastDelegate multicastDelegate)
-            {
-                if (!_methods.ContainsKey(memberName))
-                    _methods[memberName] = new ConcurrentBag<MulticastDelegate>();
+            if (string.IsNullOrWhiteSpace(memberName) || value is not MulticastDelegate multicastDelegate)
+                return false;
 
-                _methods[memberName].Add(multicastDelegate);
+            if (!_methods.ContainsKey(memberName))
+                _methods[memberName] = new ConcurrentBag<MulticastDelegate>();
 
-                return true;
-            }
+            _methods[memberName].Add(multicastDelegate);
 
-            return false;
+            return true;
         }
 
         private bool CallPropertySetter(string memberName, object value)
@@ -230,6 +223,11 @@ namespace MetaFoo.Core.Dynamic
 
             var targetCollection = _methods[methodName];
             targetCollection.Add(methodImplementation);
+        }
+
+        public bool LooksLike<T>()
+        {
+            throw new NotImplementedException("TODO: Implement this method");
         }
     }
 }

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using FakeItEasy;
 using LightInject.Interception;
 
 using MetaFoo.Core.Adapters;
+using MetaFoo.Core.Dynamic;
 using MetaFoo.Core.Reflection;
 using MetaFoo.Tests.Mocks;
 using Optional;
@@ -57,6 +59,20 @@ namespace MetaFoo.Tests
             duck.DoSomething();
 
             Assert.NotEmpty(items);
+        }
+
+        [Fact(DisplayName = "We should be able to determine whether or not a MetaObject can fulfill an interface contract")]
+        public void ShouldBeAbleToDetermineIfAMetaObjectCanFulfillAnInterfaceContract()
+        {
+            var wasMethodCalled = new ManualResetEvent(false);
+
+            Action methodBody = () => wasMethodCalled.Set();
+
+            // Add the new method that fulfills the ISampleDuckInterface contract
+            var foo = new MetaObject();
+            foo.AddMethod("DoSomething",methodBody);
+            
+            Assert.True(foo.LooksLike<ISampleDuckInterface>());
         }
     }
 }
