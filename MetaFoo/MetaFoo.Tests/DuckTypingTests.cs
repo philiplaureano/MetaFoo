@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using FakeItEasy;
 using LightInject.Interception;
-
 using MetaFoo.Core.Adapters;
 using MetaFoo.Core.Dynamic;
 using MetaFoo.Core.Reflection;
@@ -16,7 +16,8 @@ namespace MetaFoo.Tests
 {
     public class DuckTypingTests
     {
-        [Fact(DisplayName = "We should be able to duck type an interface type to a class with the same method signatures")]
+        [Fact(DisplayName =
+            "We should be able to duck type an interface type to a class with the same method signatures")]
         public void ShouldRouteInterfaceMethodCallsToAnObjectWithACompatibleMethodSignature()
         {
             var foo = new SampleDuckType();
@@ -27,7 +28,8 @@ namespace MetaFoo.Tests
             Assert.True(foo.WasCalled);
         }
 
-        [Fact(DisplayName = "We should be able to route an interface method call to any class that implements the IIInterceptor interface")]
+        [Fact(DisplayName =
+            "We should be able to route an interface method call to any class that implements the IIInterceptor interface")]
         public void ShouldRouteInterfaceCallToInterceptorInstance()
         {
             var fakeInterceptor = A.Fake<IInterceptor>();
@@ -37,7 +39,8 @@ namespace MetaFoo.Tests
             A.CallTo(() => fakeInterceptor.Invoke(A<IInvocationInfo>._)).MustHaveHappened();
         }
 
-        [Fact(DisplayName = "We should be able to route an interface method call to any class that implements the IMethodInvoker interface")]
+        [Fact(DisplayName =
+            "We should be able to route an interface method call to any class that implements the IMethodInvoker interface")]
         public void ShouldRouteInterfaceCallToMethodInvokerInstance()
         {
             var invoker = A.Fake<IMethodInvoker>();
@@ -61,7 +64,8 @@ namespace MetaFoo.Tests
             Assert.NotEmpty(items);
         }
 
-        [Fact(DisplayName = "We should be able to determine whether or not a MetaObject can fulfill an interface contract")]
+        [Fact(DisplayName =
+            "We should be able to determine whether or not a MetaObject can fulfill an interface contract")]
         public void ShouldBeAbleToDetermineIfAMetaObjectCanFulfillAnInterfaceContract()
         {
             var wasMethodCalled = new ManualResetEvent(false);
@@ -70,9 +74,36 @@ namespace MetaFoo.Tests
 
             // Add the new method that fulfills the ISampleDuckInterface contract
             var foo = new MetaObject();
-            foo.AddMethod("DoSomething",methodBody);
-            
+            foo.AddMethod("DoSomething", methodBody);
+
             Assert.True(foo.LooksLike<ISampleDuckInterface>());
+        }
+
+        [Fact(DisplayName =
+            "We should be able to add methods which allow for the implementation to access the MetaObject itself and still look like the interface in question")]
+        public void ShouldBeAbleToAddMethodsThatHaveAccessToTheMetaObjectInstanceItself()
+        {
+            var wasMethodCalled = new ManualResetEvent(false);
+            var metaObjectsAccessed = new List<MetaObject>();
+
+            // Notice how we can access the metaObject instance as part of the method body
+            Action<MetaObject> methodBody = self =>
+            {
+                metaObjectsAccessed.Add(self);
+                wasMethodCalled.Set();
+            };
+
+            var foo = new MetaObject();
+            foo.AddMethod("DoSomething", methodBody);
+
+            // Match the type signature
+            Assert.True(foo.LooksLike<ISampleDuckInterface>());
+
+            var duck = foo.CreateDuck<ISampleDuckInterface>();
+            duck.DoSomething();
+
+            Assert.True(wasMethodCalled.WaitOne(TimeSpan.FromMilliseconds(100)));
+            Assert.Single(metaObjectsAccessed, metaObject => ReferenceEquals(foo, metaObjectsAccessed.First()));
         }
     }
 }

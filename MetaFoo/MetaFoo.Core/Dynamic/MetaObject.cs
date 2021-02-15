@@ -240,15 +240,32 @@ namespace MetaFoo.Core.Dynamic
 
                 var candidateMethods = _methods[methodName]
                     .Select(currentDelegate => currentDelegate.Method).ToArray();
-                
+
                 // Match the method signature
                 var methodArgTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
-                var methodFinderContext = method.ReturnType == typeof(void)
-                    ? new MethodFinderContext(Option.None<string>(), methodArgTypes)
-                    : new MethodFinderContext(Option.None<string>(), methodArgTypes, Option.Some(method.ReturnType));
 
+                IMethodFinderContext CreateContext(MethodInfo targetMethod, IEnumerable<Type> argTypes)
+                {
+                    return targetMethod.ReturnType == typeof(void)
+                        ? new MethodFinderContext(Option.None<string>(), argTypes)
+                        : new MethodFinderContext(Option.None<string>(), argTypes,
+                            Option.Some(targetMethod.ReturnType));
+                }
+
+                var methodFinderContext = CreateContext(method, methodArgTypes);
                 var hasCompatibleMethod = finder.HasMatchingMethods(candidateMethods,
                     methodFinderContext);
+
+                // Fall back to the special methods with a MetaObject as the first parameter in case
+                // there's a method that requires access to the MetaObject in question
+                if (!hasCompatibleMethod && candidateMethods.Any(m => m.IsFallbackMethod()))
+                {
+                    var modifiedArgTypes = new List<Type> {typeof(MetaObject)};
+                    modifiedArgTypes.AddRange(methodArgTypes);
+
+                    var fallbackContext = CreateContext(method, modifiedArgTypes);
+                    hasCompatibleMethod |= finder.HasMatchingMethods(candidateMethods, fallbackContext);
+                }
 
                 if (!hasCompatibleMethod)
                     return false;
