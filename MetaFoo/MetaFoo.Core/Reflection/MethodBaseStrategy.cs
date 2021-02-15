@@ -28,5 +28,10 @@ namespace MetaFoo.Core.Reflection
         {
             return method.Name;
         }
+
+        public Option<Type> GetReturnType(TMethod method)
+        {
+            return method is MethodInfo methodInfo ? Option.Some(methodInfo.ReturnType) : Option.None<Type>();
+        }
     }
 }

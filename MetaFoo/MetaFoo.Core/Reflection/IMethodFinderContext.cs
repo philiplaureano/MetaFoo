@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Optional;
 
@@ -7,6 +8,7 @@ namespace MetaFoo.Core.Reflection
     {
         Option<string> MethodName { get; }
 
-        IEnumerable<object> Arguments { get; }
+        public IEnumerable<Option<Type>> ArgumentTypes { get; }
+        Option<Type> ReturnType { get; }
     }
 }

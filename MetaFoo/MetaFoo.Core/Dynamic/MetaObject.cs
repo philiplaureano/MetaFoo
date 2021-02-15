@@ -112,7 +112,7 @@ namespace MetaFoo.Core.Dynamic
 
             var delegatesByMethod = candidateDelegates.ToDictionary(d => d.Method);
             var candidateMethods = candidateDelegates.Select(d => d.Method).ToArray();
-            
+
             var methodArgs = new List<object>(args);
             result = null;
 
@@ -226,8 +226,35 @@ namespace MetaFoo.Core.Dynamic
         }
 
         public bool LooksLike<T>()
+            where T : class
         {
-            throw new NotImplementedException("TODO: Implement this method");
+            var methodsToMatch = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance).ToArray();
+
+            var finder = new MethodBaseFinder<MethodBase>();
+            foreach (var method in methodsToMatch)
+            {
+                // Match the method name
+                var methodName = method.Name;
+                if (!_methods.ContainsKey(methodName))
+                    return false;
+
+                var candidateMethods = _methods[methodName]
+                    .Select(currentDelegate => currentDelegate.Method).ToArray();
+                
+                // Match the method signature
+                var methodArgTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
+                var methodFinderContext = method.ReturnType == typeof(void)
+                    ? new MethodFinderContext(Option.None<string>(), methodArgTypes)
+                    : new MethodFinderContext(Option.None<string>(), methodArgTypes, Option.Some(method.ReturnType));
+
+                var hasCompatibleMethod = finder.HasMatchingMethods(candidateMethods,
+                    methodFinderContext);
+
+                if (!hasCompatibleMethod)
+                    return false;
+            }
+
+            return true;
         }
     }
 }
