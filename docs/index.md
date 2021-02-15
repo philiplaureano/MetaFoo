@@ -14,10 +14,14 @@ In a nutshell, it lets C# behave more like a dynamically typed language, such as
 
 - Dynamic Typing / MetaObjects (aka DynamicObjects on steroids)
   - Adding new methods to Dynamic Objects at runtime
-    - This includes adding multiple overloads for the same method
+    - This includes adding multiple overloads for the same method by treating dynamic objects as expando objects
+    - This also includes using the MetaObject.AddMethod(...) method to add new methods at runtime, which means using the dynamic keyword is optional
+    - Each newly added method body (aka delegate/func/action) can access the MetaObject 'self' parameter as the first parameter, which allows all method bodies to access the state of the object that it is currently executing against
   - Adding new property getters and setters to Dynamic Objects at runtime
     - Using Action&lt;T&gt; for setters, and Func&lt;T&gt; for getters
-  - Duck typing/casting to an interface that is backed by MetaFoo's dynamic MetaObject  
+  - Duck typing/casting to an interface that is backed by MetaFoo's dynamic MetaObject 
+    - Using the MetaObject.LooksLike&lt;T&gt;() method to test for similarity between the current meta object and the type you want it to look like
+    - Using MetaObject.CreateDuck&lt;T&gt;() to cast it to an interface instance that 'looks like' the given type in question (provided that you add the requisite methods to match the target type signature)
  
 - Late Binding / Reflection
   - Invoking static methods at runtime using only the type, method name, and runtime arguments
@@ -28,11 +32,13 @@ In a nutshell, it lets C# behave more like a dynamically typed language, such as
   - Duck typing an interface to a dynamic interface proxy
   - Mapping interface types to malleable and expandable [Dynamic Objects](https://docs.microsoft.com/en-us/dotnet/api/system.dynamic.dynamicobject?view=net-5.0)
   - Mapping a single method call from an interface type to a single backing Func<T> or Action<T> or Action delegate
-  - **Planned**: Appending extension classes to an existing Dynamic Object, and using those extension methods to fulfill the runtime interface contract for the duck type. (This is similar to [how Go implements interfaces](https://golangbyexample.com/interface-in-golang/) )
+  - **Planned**: Appending extension classes to an existing Meta Object, and using those extension methods to fulfill the runtime interface contract for the duck type. (This is similar to [how Go implements interfaces](https://golangbyexample.com/interface-in-golang/) )
   
 - **Planned**: IL Rewriting
   - Method Call Redirection
   - Method Call Interception
+
+- **Planned**: Reverse engineering a compiled type into a MetaObject so that it can be rewritten and modified like a dynamic type
 
 ## Installing the MetaFoo NuGet Package 
 ### Prerequisites
